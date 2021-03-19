@@ -51,7 +51,6 @@ def get_portfolio_sum() -> Decimal:
     # account = client.get_accounts() получить характиристики портфеля (включая id)
     api = client.get_portfolio(BROKER_ACCOUNT_ID)
     positions = api.payload.positions
-
     portfolio_sum = Decimal('0')
     for position in positions:
         current_ticker_cost = (Decimal(str(position.balance))
