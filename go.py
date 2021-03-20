@@ -124,15 +124,18 @@ def get_coupon_rub() -> Decimal:
     return sum_coupon_rub
 
 
-def print_info_itom(key) -> None:
+def print_info_papers(key) -> None:
     api = client.get_portfolio(BROKER_ACCOUNT_ID)
     positions = api.payload.positions
 
     print("\nТикер".ljust(10) + "Ср. цена бумаги".ljust(18) + "Кол-во бумаг".ljust(15) + "Прибыль".ljust(
         11) + "Стоимость".ljust(8))
     for position in positions:
-        if position.instrument_type != key:
+        if key=="all":
+            pass
+        elif position.instrument_type != key:
             continue
+
         ticker = position.ticker
         average_price = round(Decimal(position.average_position_price.value), 2)
         balance = int(position.balance)
@@ -146,14 +149,7 @@ def print_info_itom(key) -> None:
     return None
 
 
-def print_all(key) -> None:
-    #print_info_stock(key)
-    #print_info_etf()
-    #print_info_bond()
-    return None
-
-
-def print_itom_portfel() -> None:
+def print_papers_portfel() -> None:
 
     st = input(f"Введите вид бумаг, информацию о которых желаете увидеть\n"
                f"(a-акции, ф/f - фонды, o-облигации, all-все бумаги):")
@@ -164,11 +160,11 @@ def print_itom_portfel() -> None:
         "f": "Etf",
         "ф": "Etf",
         "о": "Bond",
-        "o": "Bond"
-        #"all": print_all
+        "o": "Bond",
+        "all": "all"
     }
 
-    print_info_itom(choices_dict[st])
+    print_info_papers(choices_dict[st])
 
     return None
 
@@ -196,4 +192,7 @@ if __name__ == "__main__":
           f"Прибыль в руб: {profit_in_rub} руб.\n"
           f"Прибыль в %: {profit_in_percent} %\n")
 
-    print_itom_portfel()
+    try:
+        print_papers_portfel()
+    except Exception:
+        print("Ошибочный аргумент")
