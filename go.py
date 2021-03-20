@@ -130,10 +130,11 @@ def print_info_papers(key) -> None:
 
     print("\nТикер".ljust(10) + "Ср. цена бумаги".ljust(18) + "Кол-во бумаг".ljust(15) + "Прибыль".ljust(
         11) + "Стоимость".ljust(8))
+
     for position in positions:
-        if key=="all":
+        if key=="All":
             pass
-        elif position.instrument_type != key:
+        elif position.instrument_type != key and position.ticker != key:
             continue
 
         ticker = position.ticker
@@ -149,24 +150,42 @@ def print_info_papers(key) -> None:
     return None
 
 
-def print_papers_portfel() -> None:
+def print_papers_portfel() -> bool:
 
-    st = input(f"Введите вид бумаг, информацию о которых желаете увидеть\n"
-               f"(a-акции, ф/f - фонды, o-облигации, all-все бумаги):")
+    st = input(f"\n1 - акции\n"
+               f"2 - фонды\n"
+               f"3 - облигации\n"
+               f"4 - информация о всех категориях\n"
+               f"5 - информация по отдельному тикеру\n"
+               f"0 - выход из программы\n"
+               f"Выберите цифру\цифры, соответствующую той информации, о которой желаете узнать: ")
 
     choices_dict = {
-        "a": "Stock",
-        "а": "Stock",
-        "f": "Etf",
-        "ф": "Etf",
-        "о": "Bond",
-        "o": "Bond",
-        "all": "all"
+        "1": "Stock",
+        "2": "Etf",
+        "3": "Bond",
+        "4": "All",
+        "5": "Ticker",
+        "0": "Exit"
     }
 
-    print_info_papers(choices_dict[st])
+    try:
+        key=choices_dict[st]
+        if key=="Exit":
+            print("\nДосвидания!")
+            return False
+        elif key == "Ticker":
+            ticker=input("\nВведите тикер, инетересующей бумаги (или 0 для выхода): ")
+            if ticker=="0":
+                return True
+            else: 
+                print_info_papers(ticker)
+        else:
+            print_info_papers(key)
+    except Exception:
+        print("\nНеккоретный аргумент, повторите попытку")
 
-    return None
+    return True
 
 
 if __name__ == "__main__":
@@ -181,7 +200,7 @@ if __name__ == "__main__":
             sum_pay_in - balance_rub) + sum_dividend_rub + sum_coupon_rub  # Прибыль портфеля в рублях
     profit_in_percent = round(100 * profit_in_rub / portfolio_sum, 2)  # Прибыль в процентах
 
-    print(f"\n\tДата открытия ИИС: {BROKER_ACCOUNT_STARTED_AT}\n\n"
+    print(f"\n\tДата открытия портфеля: {BROKER_ACCOUNT_STARTED_AT}\n\n"
           f"Пополнения: {sum_pay_in} руб.\n"
           f"Стоимость бумаг в портфеле: {portfolio_sum} руб.\n"
           f"Денежный остаток в рублях: {balance_rub} руб.\n"
@@ -192,7 +211,5 @@ if __name__ == "__main__":
           f"Прибыль в руб: {profit_in_rub} руб.\n"
           f"Прибыль в %: {profit_in_percent} %\n")
 
-    try:
-        print_papers_portfel()
-    except Exception:
-        print("Ошибочный аргумент")
+    while print_papers_portfel():
+        pass
