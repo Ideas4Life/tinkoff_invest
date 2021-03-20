@@ -11,8 +11,8 @@ load_dotenv()
 TOKEN = os.getenv('TINVEST_TOKEN')
 BROKER_ACCOUNT_ID = os.getenv('BROKER_ACCOUNT_ID')
 BROKER_ACCOUNT_STARTED_AT = datetime(2020, 8, 18, 0, 0, 0)
-
 client = tinvest.SyncClient(TOKEN)
+
 usd_course = get_usd_course()
 
 """
@@ -48,7 +48,9 @@ usd_course = get_usd_course()
 def get_portfolio_sum() -> Decimal:
     # Возвращает текущую стоимость портфеля в рублях без учета свободных денег
 
-    # account = client.get_accounts() получить характиристики портфеля (включая id)
+    # получить характиристики портфеля (включая id)
+    #account = tinvest.SyncClient(TOKEN).get_accounts().payload.accounts[0].broker_account_id
+
     api = client.get_portfolio(BROKER_ACCOUNT_ID)
     positions = api.payload.positions
     portfolio_sum = Decimal('0')
@@ -152,6 +154,7 @@ def print_all(key) -> None:
 
 
 def print_itom_portfel() -> None:
+
     st = input(f"Введите вид бумаг, информацию о которых желаете увидеть\n"
                f"(a-акции, ф/f - фонды, o-облигации, all-все бумаги):")
 
