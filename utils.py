@@ -1,7 +1,7 @@
-from decimal import Decimal
+#from decimal import Decimal
 from pytz import timezone
 from datetime import datetime
-from pycbrf.toolbox import ExchangeRates
+#from pycbrf.toolbox import ExchangeRates
 
 
 def _get_current_timezone() -> timezone:
@@ -10,11 +10,6 @@ def _get_current_timezone() -> timezone:
 
 def get_now() -> str:
     return _get_current_timezone().localize(datetime.now())
-
-
-def get_usd_course() -> Decimal:
-    rates = ExchangeRates(get_now().strftime("%Y-%m-%d"))
-    return rates['USD'].value
 
 
 def localize(d: datetime) -> datetime:
