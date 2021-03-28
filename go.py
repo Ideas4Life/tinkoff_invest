@@ -90,13 +90,11 @@ def get_coupon_rub() -> Decimal:
     return sum_coupon_rub
 
 
-def print_info_papers(key) -> None:
+def print_info_papers(key) -> dict:
     """Выводит информацию об указанной категории бумаг или о конретной бумаге по её тикеру"""
     positions=api.get_portfolio_positions()
-
-    print("\nТикер".ljust(10) + "Ср. цена бумаги".ljust(18) + "Кол-во бумаг".ljust(15) + 
-        "Прибыль".ljust(11) + "Стоимость".ljust(8))
-
+    
+    dt={}
     for position in positions:
         if key=="All":
             pass
@@ -108,53 +106,13 @@ def print_info_papers(key) -> None:
         balance = int(position.balance)
         expected_yield = round(Decimal(position.expected_yield.value), 2)
         sum_price = average_price * balance + expected_yield
-        print(f"{ticker}".ljust(15) +
-              f"{average_price} р.".ljust(17) +
-              f"{balance}".ljust(11) +
-              f"{expected_yield}".ljust(12) +
-              f"{sum_price}")
-    return None
+                
+        dt[ticker]=(average_price, str(balance), str(expected_yield), str(sum_price))
+
+    return dt
 
 
-def menu_job_with_portfolio() -> bool:
-    """Выводит меню с доступными для работы пункатами"""
-    st = input(f"\n1 - акции\n"
-               f"2 - фонды\n"
-               f"3 - облигации\n"
-               f"4 - информация о всех категориях\n"
-               f"5 - информация по отдельному тикеру\n"
-               f"0 - выход из программы\n"
-               f"Выберите цифру\\цифры, соответствующую той информации, о которой желаете узнать: ")
-
-    choices_dict = {
-        "1": "Stock",
-        "2": "Etf",
-        "3": "Bond",
-        "4": "All",
-        "5": "Ticker",
-        "0": "Exit"
-    }
-
-    try:
-        key=choices_dict[st]
-        if key=="Exit":
-            print("\nДо свидания!\n")
-            return False
-        elif key == "Ticker":
-            ticker=input("\nВведите тикер, инетересующей бумаги (или 0 для выхода): ").upper()
-            if ticker=="0":
-                return True
-            else: 
-                print_info_papers(ticker)
-        else:
-            print_info_papers(key)
-    except Exception:
-        print("\nНеккоретный аргумент, повторите попытку")
-
-    return True
-
-
-if __name__ == "__main__":
+def show_condition() -> dict:
     portfolio_sum = round(get_portfolio_sum(), 2)  # Суммарная стоимость всех бумаг в портфеле
     sum_pay_in = round(get_sum_pay_in(), 2)  # Все пополнения портфеля
     balance_rub = round(get_balance_rub(), 2)  # Остаток денежных средств в рублях
@@ -166,18 +124,17 @@ if __name__ == "__main__":
             sum_pay_in - balance_rub) + sum_dividend_rub + sum_coupon_rub  # Прибыль портфеля в рублях
     profit_in_percent = round(100 * profit_in_rub / portfolio_sum, 2)  # Прибыль в процентах
 
-    print(f"\n\tДата открытия портфеля: {BROKER_ACCOUNT_STARTED_AT}\n\n"
-          f"Текущий курс доллара: {usd_course} руб\n\n"
-          f"Пополнения: {sum_pay_in} руб.\n"
-          f"Стоимость бумаг в портфеле: {portfolio_sum} руб.\n"
-          f"Денежный остаток в рублях: {balance_rub} руб.\n"
-          f"Денежный объем портфеля: {sum_size_portfel} руб.\n\n"
-          f"Заплаченный налог: {sum_nalog_rub} руб.\n"
-          f"Полученные дивиденды: {sum_dividend_rub} руб.\n"
-          f"Полученные купоны: {sum_coupon_rub} руб.\n\n"
-          f"Прибыль в руб: {profit_in_rub} руб.\n"
-          f"Прибыль в %: {profit_in_percent} %\n")
-
-    """Работа с отдельными бамагами или категориями бумаг портфеля"""
-    while menu_job_with_portfolio():
-        pass
+    return {
+        "Дата открытия портфеля: ": BROKER_ACCOUNT_STARTED_AT,
+        "Текущий курс доллара: ": usd_course,
+        "\nПополнения: ": sum_pay_in,
+        "Стоимость бумаг в портфеле: ": portfolio_sum,
+        "Денежный остаток в рублях: ": balance_rub,
+        "Денежный объем портфеля: ": sum_size_portfel,
+        "\nЗаплаченный налог: ": sum_nalog_rub,
+        "Полученные дивиденды: ": sum_dividend_rub,
+        "Полученные купоны: ": sum_coupon_rub,
+        "\nПрибыль в руб: ": profit_in_rub,
+        "Прибыль в %: ": profit_in_percent
+    }
+    
